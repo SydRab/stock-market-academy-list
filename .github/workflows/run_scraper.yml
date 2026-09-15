@@ -1,4 +1,4 @@
-name: Run Serper Lead Scraper
+name: Run Serper Lead Scraper Pipeline
 
 on:
   workflow_dispatch:
@@ -21,15 +21,26 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Execute Scraper Script
+    # - name: 1. Execute Maps Scraper
+    #   env:
+    #     SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+    #   run: python scraper.py
+
+    - name: 2. Execute Website Enrichment
+      run: python enrich_leads.py
+
+    - name: 3. Execute Social Scraper
       env:
         SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
-      run: python scraper.py
+      run: python social_scraper.py
 
-    - name: Commit and Push CSV Output
+    - name: 4. Merge & Deduplicate Datasets
+      run: python merge_leads.py
+
+    - name: Commit and Push Master CSV Output
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action Bot"
-        git add stock_market_academies.csv
-        git diff-index --quiet HEAD || git commit -m "Automated update: Lead collection CSV"
+        git add *.csv
+        git diff-index --quiet HEAD || git commit -m "Automated update: Master Lead List"
         git push
