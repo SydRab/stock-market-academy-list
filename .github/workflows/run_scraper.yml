@@ -29,10 +29,10 @@ jobs:
     - name: 2. Execute Website Enrichment
       run: python enrich_leads.py
 
-    - name: 3. Execute Social Scraper
-      env:
-        SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
-      run: python social_scraper.py
+    # - name: 3. Execute Social Scraper
+    #   env:
+    #     SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+    #   run: python social_scraper.py
 
     - name: 4. Merge & Deduplicate Datasets
       run: python merge_leads.py
